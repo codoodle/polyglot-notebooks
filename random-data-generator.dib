@@ -1,0 +1,67 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"javascript","items":[{"name":"csharp","languageName":"C#","aliases":["c#","cs"]},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"html","languageName":"HTML"},{"name":"http","languageName":"HTTP"},{"name":"javascript","languageName":"javascript"},{"name":"mermaid","languageName":"Mermaid"},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"value"}]}}
+
+#!markdown
+
+# 램덤 데이터 만들기
+
+#!csharp
+
+var random = new Random();
+int count = 103;
+var list = new List<object>();
+
+string[] values1 = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
+string[] values2 = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j" };
+string[] values3 = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
+
+string GetRandomFromValues1() => values1[random.Next(values1.Length)];
+string GetRandomFromValues2() => values2[random.Next(values2.Length)];
+string GetRandomFromValues3() => values3[random.Next(values3.Length)];
+
+int GetRandomInteger(int min = 18, int max = 90) => random.Next(min, max);
+
+DateTime GetRandomDate(int yearsBack = 100) => DateTime.UtcNow.AddMilliseconds(- (long)(random.NextDouble() * TimeSpan.FromDays(365 * yearsBack).TotalMilliseconds));
+
+DateTime GetRandomDateAfter(DateTime before) => before.AddMilliseconds(random.NextDouble() * TimeSpan.FromDays(365).TotalMilliseconds);
+
+string GetRandomEmail(int userId) => $"user{userId}_{random.Next(1000,9999)}@example.com";
+
+string GetRandomAddress() => $"Addr-{Guid.NewGuid().ToString().Substring(0,8)}";
+
+string GetRandomPhoneNumber() => string.Concat(Enumerable.Range(0, 10).Select(_ => random.Next(10).ToString()));
+
+bool GetRandomBoolean() => random.Next(2) == 0;
+
+
+for (int i = 1; i <= count; i++)
+{
+    var d = GetRandomDate(1);
+    list.Add(new {
+        Id = i,
+        Value1 = GetRandomFromValues1(),
+        Value2 = GetRandomFromValues2(),
+        Value3 = GetRandomFromValues3(),
+        Number1 = GetRandomInteger(),
+        Number2 = GetRandomInteger(),
+        Bool1 = GetRandomBoolean(),
+        Bool2 = GetRandomBoolean(),
+        Date1 = GetRandomDate(),
+        Date2 = d,
+        Date3 = GetRandomDateAfter(d),
+        Email = GetRandomEmail(i),
+        Address = GetRandomAddress(),
+        PhoneNumber = GetRandomPhoneNumber(),
+    });
+}
+
+var randomData = list.ToArray();
+
+randomData
+
+#!javascript
+
+#!set --value @csharp:randomData --name randomData
+
+console.log(JSON.stringify(randomData, null, 2));
