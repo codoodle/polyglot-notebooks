@@ -41,3 +41,44 @@ console.log(nameModel.value); // "Alice"
 console.log(ageModel.value); // 30
 
 ```
+
+#!markdown
+
+```vue
+<template>
+  <ag-grid-vue
+    ref="gridRef"
+    :columnDefs="columnDefs"
+    :rowData="rowData"
+    @grid-ready="onGridReady"
+  />
+</template>
+
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { AgGridVue } from 'ag-grid-vue3';
+
+const gridRef = ref();
+let gridApi;
+let blurHandler; // 핸들러를 변수로 저장
+
+const onGridReady = (params) => {
+  gridApi = params.api;
+  const gridElement = gridRef.value.$el.querySelector('.ag-root');
+  blurHandler = (event) => {
+    if (!event.relatedTarget || !event.relatedTarget.closest('.calendar-popup')) {
+      gridApi.stopEditing();
+    }
+  };
+  gridElement.addEventListener('blur', blurHandler);
+};
+
+// 컴포넌트 언마운트 시 이벤트 리스너 제거
+onBeforeUnmount(() => {
+  const gridElement = gridRef.value?.$el?.querySelector('.ag-root');
+  if (gridElement && blurHandler) {
+    gridElement.removeEventListener('blur', blurHandler);
+  }
+});
+</script>
+```
