@@ -1,0 +1,43 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"javascript","items":[{"name":"csharp","languageName":"C#","aliases":["c#","cs"]},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"html","languageName":"HTML"},{"name":"http","languageName":"HTTP"},{"name":"javascript","languageName":"javascript"},{"name":"mermaid","languageName":"Mermaid"},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"value"}]}}
+
+#!markdown
+
+```javascript
+import { computed, ref } from "vue";
+
+/**
+ * Vue 객체 모델을 위한 composable
+ * @template T - 모델 객체의 타입
+ * @param {import("vue").Ref<T>} modelRef - 모델 참조 객체
+ * @returns {{ createFieldModel: <K extends keyof T>(fieldName: K) => import("vue").ComputedRef<T[K]> }} - 필드 모델 생성 함수
+ */
+export function useObjectModel(modelRef) {
+  /**
+   * 지정된 필드에 대한 computed 모델을 생성합니다
+   * @template K - 필드 이름의 타입 (T의 키 중 하나)
+   * @param {K} fieldName - 필드 이름
+   * @returns {import("vue").ComputedRef<T[K]>} - computed getter/setter
+   */
+  const createFieldModel = (fieldName) => {
+    return computed({
+      get: () => modelRef.value?.[fieldName],
+      set: (value) => {
+        modelRef.value = { ...modelRef.value, [fieldName]: value };
+      },
+    });
+  };
+
+  return { createFieldModel };
+}
+
+const r = ref({ name: "Alice", age: 30 });
+const { createFieldModel } = useObjectModel(r);
+const nameModel = createFieldModel("name");
+const ageModel = createFieldModel("age");
+
+console.log(nameModel.value); // "Alice"
+console.log(ageModel.value); // 30
+
+```
